@@ -91,3 +91,15 @@ body {
     display: none;
   }
 }
+
+/* ── 항목 카드 (#프로젝트) ── */
+/* 문단이 통째로 이탤릭이면 날짜 같은 메타 정보로 본다 — `*2026.07 ~ 현재*`.
+   문장 중간의 강조(`*...*의 기록이다`)는 :only-child가 아니라 걸리지 않는다 */
+.cv-card p:has(> em:only-child) {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-faint);
+}
+.cv-card p:has(> em:only-child) em {
+  font-style: normal;
+}

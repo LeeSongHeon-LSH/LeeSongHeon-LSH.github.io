@@ -6,7 +6,7 @@ import { Markdown } from "./markdown";
 import { PixelMascot } from "./pixel";
 import { IceScene } from "./scene";
 import { CvFilter } from "./sections";
-import { splitSections } from "./split";
+import { splitEntries, splitSections } from "./split";
 
 /** cv.md의 마지막 커밋 시각 — 파일 mtime은 CI 체크아웃 시각이라 못 쓴다 (얕은 클론이면 빈 값) */
 function lastEditedMonth(): string | null {
@@ -39,6 +39,33 @@ const cvComponents: Components = {
   ),
 };
 
+// 카드 안에서는 제목이 박스의 첫 줄 — 바깥에서 쓰던 윗여백을 뺀다
+const cardComponents: Components = {
+  ...cvComponents,
+  h3: ({ children }) => <h3 className="font-display text-base font-bold">{children}</h3>,
+};
+
+/** 섹션 하나 — `### ` 항목이 있으면 항목마다 네모 박스로 싼다 (없으면 통째로 렌더) */
+function Section({ body }: { body: string }) {
+  const { head, entries } = splitEntries(body);
+  if (entries.length === 0) return <Markdown components={cvComponents}>{body}</Markdown>;
+  return (
+    <>
+      <Markdown components={cvComponents}>{head}</Markdown>
+      <div className="mt-4 space-y-3">
+        {entries.map((e) => (
+          <div
+            key={e.title}
+            className="cv-card rounded-lg border border-line bg-paper/35 px-4 py-3.5 sm:px-5"
+          >
+            <Markdown components={cardComponents}>{e.body}</Markdown>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
 /**
  * 공개 CV — "이력서 = 종이 한 장": 눈밭 위 종이 시트, 위 모서리에 잠옷 펭귄(장식).
  * 본문 원본은 리포의 cv.md — 빌드 때 읽어 정적 HTML로 굳는다 (GitHub Pages는 서버가 없다).
@@ -59,7 +86,7 @@ export default function CvPage() {
             intro={intro ? <Markdown components={cvComponents}>{intro}</Markdown> : null}
             sections={sections.map((s) => ({
               title: s.title,
-              node: <Markdown components={cvComponents}>{s.body}</Markdown>,
+              node: <Section body={s.body} />,
             }))}
           />
         ) : (
