@@ -45,14 +45,43 @@ function Snowfall() {
   );
 }
 
+// 별 — 밤에만 보인다(CSS). 눈송이처럼 고정 배치
+const STARS = [
+  { left: "6%", top: "8%", size: 2 },
+  { left: "15%", top: "22%", size: 1 },
+  { left: "23%", top: "5%", size: 2 },
+  { left: "31%", top: "16%", size: 1 },
+  { left: "40%", top: "9%", size: 2 },
+  { left: "47%", top: "26%", size: 1 },
+  { left: "55%", top: "4%", size: 2 },
+  { left: "63%", top: "18%", size: 1 },
+  { left: "70%", top: "7%", size: 2 },
+  { left: "78%", top: "24%", size: 1 },
+  { left: "86%", top: "11%", size: 2 },
+  { left: "93%", top: "20%", size: 1 },
+];
+
+function NightSky() {
+  return (
+    <>
+      {STARS.map((s) => (
+        <span key={s.left} className="star" style={{ left: s.left, top: s.top, width: s.size, height: s.size }} />
+      ))}
+      <div className="aurora" />
+    </>
+  );
+}
+
 /**
  * 남극 지평선 — CV 페이지 배경 (LSHobby #65·#67 전면 하늘에서 이관).
  * 옅은 얼음빛 하늘 아래 빙하 산 → 눈드리프트 지면 → 펭귄 무리, 성근 눈내림.
+ * 방문자 시각이 밤이면(`html[data-night]`, sky.ts) 하늘이 어두워지고 별·오로라가 뜬다.
  * -z-10 고정 레이어라 페이지 콘텐츠는 그대로 위에 얹힌다.
  */
 export const IceScene = memo(function IceScene() {
   return (
     <div aria-hidden="true" className="sky-ice pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+      <NightSky />
       <Snowfall />
       <div className="absolute left-[8%] top-[10%]">
         <PixelCloud size={92} />

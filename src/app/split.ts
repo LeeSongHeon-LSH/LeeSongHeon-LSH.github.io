@@ -32,3 +32,16 @@ export function splitEntries(body: string): {
   const { head, items } = splitByHeading(body, 3);
   return { head, entries: items };
 }
+
+/** URL 해시(`#프로젝트`)가 가리키는 섹션 제목 — 없거나 모르는 제목이면 null (전체 보기) */
+export function sectionFromHash(hash: string, titles: string[]): string | null {
+  const raw = hash.startsWith("#") ? hash.slice(1) : hash;
+  if (!raw) return null;
+  let title: string;
+  try {
+    title = decodeURIComponent(raw);
+  } catch {
+    return null; // 깨진 퍼센트 인코딩 — 브라우저가 그대로 넘겨준다
+  }
+  return titles.includes(title) ? title : null;
+}

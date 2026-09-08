@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { splitEntries, splitSections } from "./split";
+import { sectionFromHash, splitEntries, splitSections } from "./split";
 
 // #61 섹션 필터 — h2 기준 분할 규칙 (서버 렌더·클라 필터가 공유)
 describe("splitSections", () => {
@@ -51,5 +51,20 @@ describe("splitEntries", () => {
     const { entries } = splitEntries("## 프로젝트\n\n### 가\n#### 하위\n본문");
     expect(entries).toHaveLength(1);
     expect(entries[0].body).toContain("#### 하위");
+  });
+});
+
+// 섹션 필터 ↔ URL 해시 — `#프로젝트` 링크를 공유할 수 있다
+describe("sectionFromHash", () => {
+  const titles = ["프로젝트", "학력"];
+  it("인코딩된 해시를 제목으로 돌린다", () => {
+    expect(sectionFromHash(`#${encodeURIComponent("프로젝트")}`, titles)).toBe("프로젝트");
+    expect(sectionFromHash("#학력", titles)).toBe("학력");
+  });
+  it("빈 해시·모르는 제목·깨진 인코딩은 전체 보기", () => {
+    expect(sectionFromHash("", titles)).toBeNull();
+    expect(sectionFromHash("#", titles)).toBeNull();
+    expect(sectionFromHash("#없는섹션", titles)).toBeNull();
+    expect(sectionFromHash("#%E0%A4%A", titles)).toBeNull();
   });
 });

@@ -103,3 +103,132 @@ body {
 .cv-card p:has(> em:only-child) em {
   font-style: normal;
 }
+
+/* ── 마스코트 장난감 (mascot.tsx) — 폴짝 + 아기 펭귄 등장 ── */
+.hop {
+  animation: hop 0.45s cubic-bezier(0.2, 0.8, 0.3, 1);
+  transform-origin: 50% 100%;
+}
+@keyframes hop {
+  0% {
+    transform: translateY(0) scale(1.1, 0.9);
+  }
+  40% {
+    transform: translateY(-11px) scale(0.95, 1.05);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+.chick-pop {
+  display: inline-flex;
+  animation: chick-pop 0.35s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  transform-origin: 50% 100%;
+}
+@keyframes chick-pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── 원문 보기 (raw.tsx) — 줄번호 거터 ── */
+.raw-md {
+  counter-reset: line;
+}
+.raw-line {
+  display: block;
+  counter-increment: line;
+  padding-left: 2.6rem;
+  position: relative;
+}
+.raw-line::before {
+  content: counter(line);
+  position: absolute;
+  left: 0;
+  width: 2rem;
+  text-align: right;
+  color: var(--color-line);
+  user-select: none;
+}
+
+/* ── 밤 (sky.ts → html[data-night]) — 하늘만 어두워지고 종이는 그대로 등불 아래 ── */
+html[data-night] body {
+  background: #101826;
+}
+html[data-night] .sky-ice {
+  background: linear-gradient(180deg, #0a1322 0%, #12203a 45%, #1c2c46 80%, #24354f 100%);
+}
+html[data-night] .ice-ground {
+  background: #b7c7d8;
+}
+html[data-night] .ice-ground::before {
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="8"><path d="M0 8V4h4V2h4v2h4v2h4V3h4v2h4v3z" fill="%23b7c7d8"/></svg>');
+}
+html[data-night] .flake {
+  background: #7d95b0;
+}
+/* 빙하·펭귄 스프라이트는 색이 박혀 있다 — 그늘로 내린다 */
+html[data-night] .sky-ice svg {
+  filter: brightness(0.62) saturate(0.85);
+}
+html[data-night] .cv-sheet {
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+.star,
+.aurora {
+  display: none;
+}
+html[data-night] .star {
+  display: block;
+  position: absolute;
+  border-radius: 50%;
+  background: #e6eef8;
+  animation: twinkle 3.2s ease-in-out infinite alternate;
+}
+html[data-night] .star:nth-child(odd) {
+  animation-delay: -1.6s;
+}
+@keyframes twinkle {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 1;
+  }
+}
+html[data-night] .aurora {
+  display: block;
+  position: absolute;
+  left: -12%;
+  right: -12%;
+  top: -6%;
+  height: 58%;
+  background:
+    radial-gradient(60% 46% at 24% 42%, rgba(92, 232, 176, 0.5), transparent 70%),
+    radial-gradient(52% 42% at 58% 30%, rgba(118, 168, 255, 0.42), transparent 70%),
+    radial-gradient(46% 40% at 84% 46%, rgba(212, 122, 200, 0.36), transparent 70%);
+  filter: blur(28px);
+  mix-blend-mode: screen;
+  animation: aurora-drift 18s ease-in-out infinite alternate;
+}
+@keyframes aurora-drift {
+  from {
+    transform: translateX(-4%) skewX(-6deg);
+  }
+  to {
+    transform: translateX(4%) skewX(6deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hop,
+  .chick-pop,
+  html[data-night] .star,
+  html[data-night] .aurora {
+    animation: none;
+  }
+}

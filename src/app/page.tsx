@@ -3,7 +3,8 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Components } from "react-markdown";
 import { Markdown } from "./markdown";
-import { PixelMascot } from "./pixel";
+import { Mascot } from "./mascot";
+import { RawToggle } from "./raw";
 import { IceScene } from "./scene";
 import { CvFilter } from "./sections";
 import { splitEntries, splitSections } from "./split";
@@ -67,7 +68,8 @@ function Section({ body }: { body: string }) {
 }
 
 /**
- * 공개 CV — "이력서 = 종이 한 장": 눈밭 위 종이 시트, 위 모서리에 잠옷 펭귄(장식).
+ * 공개 CV — "이력서 = 종이 한 장": 눈밭 위 종이 시트, 위 모서리에 잠옷 펭귄(누르면 폴짝).
+ * 장난감은 전부 본문을 읽은 뒤에야 보이는 것들 — ` 키 원문 보기, #해시 필터, 밤 오로라.
  * 본문 원본은 리포의 cv.md — 빌드 때 읽어 정적 HTML로 굳는다 (GitHub Pages는 서버가 없다).
  */
 export default function CvPage() {
@@ -78,17 +80,19 @@ export default function CvPage() {
     <main className="relative mx-auto w-full max-w-2xl flex-1 px-4 pb-16 pt-14 sm:px-6">
       <IceScene />
       <div className="absolute left-1/2 top-[26px] z-[2] -translate-x-1/2">
-        <PixelMascot size={48} />
+        <Mascot />
       </div>
-      <div className="relative z-[1] min-h-[70dvh] rounded-lg border border-line bg-sheet px-6 pb-12 pt-10 shadow-[0_10px_30px_rgba(34,38,43,0.08)] sm:px-10">
+      <div className="cv-sheet relative z-[1] min-h-[70dvh] rounded-lg border border-line bg-sheet px-6 pb-12 pt-10 shadow-[0_10px_30px_rgba(34,38,43,0.08)] sm:px-10">
         {content ? (
-          <CvFilter
-            intro={intro ? <Markdown components={cvComponents}>{intro}</Markdown> : null}
-            sections={sections.map((s) => ({
-              title: s.title,
-              node: <Section body={s.body} />,
-            }))}
-          />
+          <RawToggle raw={content}>
+            <CvFilter
+              intro={intro ? <Markdown components={cvComponents}>{intro}</Markdown> : null}
+              sections={sections.map((s) => ({
+                title: s.title,
+                node: <Section body={s.body} />,
+              }))}
+            />
+          </RawToggle>
         ) : (
           <p className="pt-16 text-center text-sm text-faint">CV 준비 중입니다.</p>
         )}
