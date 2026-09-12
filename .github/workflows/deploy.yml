@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0 # "마지막 수정"은 cv.md의 마지막 커밋 시각 — 전체 히스토리가 필요하다
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
       - run: npm ci
       - run: npm test
