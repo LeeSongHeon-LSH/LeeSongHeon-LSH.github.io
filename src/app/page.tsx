@@ -79,10 +79,7 @@ export default function CvPage() {
   return (
     <main className="relative mx-auto w-full max-w-2xl flex-1 px-4 pb-16 pt-14 sm:px-6">
       <IceScene />
-      <div className="absolute left-1/2 top-[26px] z-[2] -translate-x-1/2">
-        <Mascot />
-      </div>
-      <div className="cv-sheet relative z-[1] min-h-[70dvh] rounded-lg border border-line bg-sheet px-6 pb-12 pt-10 shadow-[0_10px_30px_rgba(34,38,43,0.08)] sm:px-10">
+      <div className="cv-sheet relative z-[1] min-h-[70dvh] rounded-lg border border-line bg-sheet px-6 pb-12 pt-10 sm:px-10">
         {content ? (
           <RawToggle raw={content}>
             <CvFilter
@@ -97,10 +94,15 @@ export default function CvPage() {
           <p className="pt-16 text-center text-sm text-faint">CV 준비 중입니다.</p>
         )}
         {content && edited && (
-          <p className="absolute bottom-3.5 right-5 font-mono text-[10px] text-line">
+          <p className="absolute bottom-3.5 right-5 font-mono text-[10px] text-faint">
             마지막 수정 {edited}
           </p>
         )}
+      </div>
+      {/* 마스코트는 종이 다음에 — 위치는 absolute라 그대로지만, 탭 순서에서 이력서 뒤로 물러난다.
+          장난감이 이메일·GitHub 링크보다 먼저 잡히면 키보드로 읽는 사람만 손해를 본다 */}
+      <div className="absolute left-1/2 top-[26px] z-[2] -translate-x-1/2">
+        <Mascot />
       </div>
     </main>
   );

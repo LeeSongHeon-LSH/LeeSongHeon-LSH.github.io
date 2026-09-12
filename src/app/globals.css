@@ -6,12 +6,21 @@
   --color-sheet: #fffdf7; /* CV 종이 */
   --color-ink: #22262b; /* 먹(턱시도) */
   --color-faint: #8a9099; /* 보조 텍스트 */
-  --color-line: #d9dee4; /* 괘선 */
+  --color-line: #d9dee4; /* 괘선 — 선 전용. 글자에 쓰면 종이 위에서 1.3:1이라 안 읽힌다 */
   --color-cv: #c05e7c; /* CV — 잠옷 로즈 */
   --color-cv-soft: #f6e7ec;
   --font-display: var(--font-gowun), "Gowun Batang", serif;
   --font-sans: var(--font-plex), "IBM Plex Sans KR", sans-serif;
   --font-mono: var(--font-plex-mono), "IBM Plex Mono", monospace;
+}
+
+/* 낮/밤이 갈리는 값은 전부 여기 모아둔다 — 밤은 아래 html[data-night]에서 이 목록만 갈아끼운다.
+   --color-paper(@theme)도 그 대상이라, 새 면을 칠할 땐 hex 대신 토큰을 쓰면 밤이 따라온다 */
+:root {
+  --color-ground: #f7fafc; /* 눈드리프트 지면 */
+  --color-flake: #cfdfe9; /* 눈송이 */
+  --sky-gradient: linear-gradient(180deg, #d5e6f2 0%, #e4eef5 42%, #eef1f4 80%);
+  --sheet-shadow: 0 10px 30px rgba(34, 38, 43, 0.08);
 }
 
 body {
@@ -25,15 +34,20 @@ body {
   outline-offset: 2px;
 }
 
+.cv-sheet {
+  box-shadow: var(--sheet-shadow);
+}
+
 /* ── 남극 장면 (#65) — 지평선·눈내림 + 펭귄 뒤뚱 ── */
-/* 눈드리프트 지면 — 위 가장자리는 픽셀 계단 타일(24×8)로 들쭉하게 */
+/* 눈드리프트 지면 — 위 가장자리는 픽셀 계단 타일(24×8)로 들쭉하게.
+   타일은 색이 아니라 마스크다 — 색은 --color-ground 하나에서만 나온다 */
 .ice-ground {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   height: 44px;
-  background: #f7fafc;
+  background: var(--color-ground);
 }
 .ice-ground::before {
   content: "";
@@ -42,13 +56,16 @@ body {
   right: 0;
   top: -8px;
   height: 8px;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="8"><path d="M0 8V4h4V2h4v2h4v2h4V3h4v2h4v3z" fill="%23f7fafc"/></svg>')
+  background: var(--color-ground);
+  -webkit-mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="8"><path d="M0 8V4h4V2h4v2h4v2h4V3h4v2h4v3z" fill="black"/></svg>')
+    bottom left / 24px 8px repeat-x;
+  mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="8"><path d="M0 8V4h4V2h4v2h4v2h4V3h4v2h4v3z" fill="black"/></svg>')
     bottom left / 24px 8px repeat-x;
 }
 .flake {
   position: absolute;
   top: -6px;
-  background: #cfdfe9;
+  background: var(--color-flake);
   animation: snow-fall linear infinite;
 }
 @keyframes snow-fall {
@@ -57,7 +74,7 @@ body {
   }
 }
 .sky-ice {
-  background: linear-gradient(180deg, #d5e6f2 0%, #e4eef5 42%, #eef1f4 80%);
+  background: var(--sky-gradient);
 }
 
 /* 펭귄 뒤뚱 — .pg-host에 올리면 안의 .pg-waddle이 좌우로 기우뚱 */
@@ -79,16 +96,6 @@ body {
   }
   75% {
     transform: rotate(6deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pg-host:hover .pg-waddle,
-  .pg-host:focus-visible .pg-waddle {
-    animation: none;
-  }
-  .flake {
-    display: none;
   }
 }
 
@@ -140,8 +147,12 @@ body {
 .raw-md {
   counter-reset: line;
 }
+/* block이 아니라 inline-block인 이유 — 줄바꿈을 마크업의 "\n" 하나로만 만들기 위해서다.
+   block이면 요소 경계가 줄바꿈을 하나 더 세서, 화면은 그대로인데 복사하면 두 줄씩 벌어진다.
+   (빈 줄이 사라지니 "\n"을 빼는 쪽으로는 못 간다.) width 100%라 줄이 접혀도 거터에 맞춰 들여써진다 */
 .raw-line {
-  display: block;
+  display: inline-block;
+  width: 100%;
   counter-increment: line;
   padding-left: 2.6rem;
   position: relative;
@@ -152,32 +163,23 @@ body {
   left: 0;
   width: 2rem;
   text-align: right;
-  color: var(--color-line);
+  color: var(--color-faint);
   user-select: none;
 }
 
 /* ── 밤 (sky.ts → html[data-night]) — 하늘만 어두워지고 종이는 그대로 등불 아래 ── */
-html[data-night] body {
-  background: #101826;
+/* --color-paper는 layout.tsx의 theme-color와 같이 움직여야 한다 (sky.ts의 NIGHT_PAPER, sky.test.ts가 대조) */
+html[data-night] {
+  --color-paper: #101826;
+  --color-ground: #b7c7d8;
+  --color-flake: #7d95b0;
+  --sky-gradient: linear-gradient(180deg, #0a1322 0%, #12203a 45%, #1c2c46 80%, #24354f 100%);
+  --sheet-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
 }
-html[data-night] .sky-ice {
-  background: linear-gradient(180deg, #0a1322 0%, #12203a 45%, #1c2c46 80%, #24354f 100%);
-}
-html[data-night] .ice-ground {
-  background: #b7c7d8;
-}
-html[data-night] .ice-ground::before {
-  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="8"><path d="M0 8V4h4V2h4v2h4v2h4V3h4v2h4v3z" fill="%23b7c7d8"/></svg>');
-}
-html[data-night] .flake {
-  background: #7d95b0;
-}
-/* 빙하·펭귄 스프라이트는 색이 박혀 있다 — 그늘로 내린다 */
+/* 빙하·펭귄 스프라이트는 색이 픽셀에 박혀 있어 토큰이 안 닿는다 — 장면째로 그늘에 내린다.
+   종이 위 마스코트(page.tsx)는 일부러 뺐다 — 등불 아래라 밤에도 그대로 밝다 */
 html[data-night] .sky-ice svg {
   filter: brightness(0.62) saturate(0.85);
-}
-html[data-night] .cv-sheet {
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
 }
 .star,
 .aurora {
@@ -189,9 +191,6 @@ html[data-night] .star {
   border-radius: 50%;
   background: #e6eef8;
   animation: twinkle 3.2s ease-in-out infinite alternate;
-}
-html[data-night] .star:nth-child(odd) {
-  animation-delay: -1.6s;
 }
 @keyframes twinkle {
   from {
@@ -224,11 +223,19 @@ html[data-night] .aurora {
     transform: translateX(4%) skewX(6deg);
   }
 }
+
+/* ── 움직임 줄이기 ── */
+/* 이 파일의 @keyframes는 여기 한 곳에서 전부 끈다 — 새 애니메이션을 넣으면 이 목록에도 넣는다 */
 @media (prefers-reduced-motion: reduce) {
+  .pg-host:hover .pg-waddle,
+  .pg-host:focus-visible .pg-waddle,
   .hop,
   .chick-pop,
   html[data-night] .star,
   html[data-night] .aurora {
     animation: none;
+  }
+  .flake {
+    display: none;
   }
 }

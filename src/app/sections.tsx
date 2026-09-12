@@ -17,17 +17,17 @@ export function CvFilter({
   sections: { title: string; node: ReactNode }[];
 }) {
   const [active, setActive] = useState<string | null>(null);
-  const titlesKey = sections.map((s) => s.title).join("\n");
 
   // 첫 렌더는 항상 전체 보기(정적 HTML과 일치) → 마운트 후 해시를 읽어 맞춘다.
-  // 뒤로가기·주소창 편집으로 해시가 바뀌어도 따라간다
+  // 뒤로가기·주소창 편집으로 해시가 바뀌어도 따라간다.
+  // sections는 서버에서 한 번 만들어져 그대로 내려오니 이 effect는 마운트 때만 돈다
   useEffect(() => {
-    const titles = titlesKey.split("\n");
+    const titles = sections.map((s) => s.title);
     const sync = () => setActive(sectionFromHash(window.location.hash, titles));
     sync();
     window.addEventListener("hashchange", sync);
     return () => window.removeEventListener("hashchange", sync);
-  }, [titlesKey]);
+  }, [sections]);
 
   const pick = (title: string) => {
     const next = active === title ? null : title;

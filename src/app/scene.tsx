@@ -45,27 +45,32 @@ function Snowfall() {
   );
 }
 
-// 별 — 밤에만 보인다(CSS). 눈송이처럼 고정 배치
+// 별 — 밤에만 보인다(CSS). 눈송이처럼 고정 배치.
+// 반짝임이 엇갈리게 delay도 여기 적는다 — :nth-child(odd)로 하면 형제 순서가 바뀔 때 같이 깨진다
 const STARS = [
-  { left: "6%", top: "8%", size: 2 },
-  { left: "15%", top: "22%", size: 1 },
-  { left: "23%", top: "5%", size: 2 },
-  { left: "31%", top: "16%", size: 1 },
-  { left: "40%", top: "9%", size: 2 },
-  { left: "47%", top: "26%", size: 1 },
-  { left: "55%", top: "4%", size: 2 },
-  { left: "63%", top: "18%", size: 1 },
-  { left: "70%", top: "7%", size: 2 },
-  { left: "78%", top: "24%", size: 1 },
-  { left: "86%", top: "11%", size: 2 },
-  { left: "93%", top: "20%", size: 1 },
+  { left: "6%", top: "8%", size: 2, delay: "0s" },
+  { left: "15%", top: "22%", size: 1, delay: "-1.6s" },
+  { left: "23%", top: "5%", size: 2, delay: "0s" },
+  { left: "31%", top: "16%", size: 1, delay: "-1.6s" },
+  { left: "40%", top: "9%", size: 2, delay: "0s" },
+  { left: "47%", top: "26%", size: 1, delay: "-1.6s" },
+  { left: "55%", top: "4%", size: 2, delay: "0s" },
+  { left: "63%", top: "18%", size: 1, delay: "-1.6s" },
+  { left: "70%", top: "7%", size: 2, delay: "0s" },
+  { left: "78%", top: "24%", size: 1, delay: "-1.6s" },
+  { left: "86%", top: "11%", size: 2, delay: "0s" },
+  { left: "93%", top: "20%", size: 1, delay: "-1.6s" },
 ];
 
 function NightSky() {
   return (
     <>
       {STARS.map((s) => (
-        <span key={s.left} className="star" style={{ left: s.left, top: s.top, width: s.size, height: s.size }} />
+        <span
+          key={s.left}
+          className="star"
+          style={{ left: s.left, top: s.top, width: s.size, height: s.size, animationDelay: s.delay }}
+        />
       ))}
       <div className="aurora" />
     </>

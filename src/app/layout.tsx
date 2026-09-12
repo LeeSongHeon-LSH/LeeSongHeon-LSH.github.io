@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import { Gowun_Batang, IBM_Plex_Mono, IBM_Plex_Sans_KR } from "next/font/google";
 import "./globals.css";
 import { NIGHT_SCRIPT } from "./sky";
@@ -13,15 +13,12 @@ export const metadata: Metadata = {
   description: "이송헌(Lee SongHeon)의 이력서",
 };
 
-export const viewport: Viewport = {
-  themeColor: "#eef1f4",
-};
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ko" className={`${gowun.variable} ${plex.variable} ${plexMono.variable} h-full antialiased`}>
       <head>
-        {/* 밤 판정은 첫 페인트 전에 — 하이드레이션 뒤에 바꾸면 낮 하늘이 한 번 번쩍인다 */}
+        {/* 밤 판정은 첫 페인트 전에 — 하이드레이션 뒤에 바꾸면 낮 하늘이 한 번 번쩍인다.
+            theme-color 메타(주소창 색)도 이 스크립트가 만든다 (sky.ts 주석 참고) */}
         <script dangerouslySetInnerHTML={{ __html: NIGHT_SCRIPT }} />
       </head>
       <body className="flex min-h-full flex-col bg-paper text-ink">{children}</body>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { PixelChick, PixelMascot } from "./pixel";
 
 const MAX_CHICKS = 3;
@@ -11,18 +11,32 @@ const MAX_CHICKS = 3;
  */
 export function Mascot() {
   const [hops, setHops] = useState(0);
+  const [hopping, setHopping] = useState(false);
+  const hopRef = useRef<HTMLSpanElement>(null);
   const chicks = hops % (MAX_CHICKS + 1);
+
+  // 연타로 폴짝을 처음부터 다시 시키되, key로 갈아끼우지는 않는다 —
+  // 리마운트하면 16×16 스프라이트를 통째로 다시 그리고 호버 중이던 뒤뚱도 끊긴다
+  const hop = () => {
+    setHops((n) => n + 1);
+    for (const a of hopRef.current?.getAnimations() ?? []) a.currentTime = 0;
+    setHopping(true);
+  };
 
   return (
     <div className="relative">
       <button
         type="button"
-        onClick={() => setHops((n) => n + 1)}
+        onClick={hop}
         aria-label="펭귄 마스코트 — 누르면 폴짝"
         className="pg-host block cursor-pointer rounded-sm"
       >
-        {/* 폴짝(hop)은 바깥, 뒤뚱(waddle)은 안쪽 — 한 요소에 두 animation을 못 얹는다. key로 매번 처음부터 */}
-        <span key={hops} className={`block ${hops ? "hop" : ""}`}>
+        {/* 폴짝(hop)은 바깥, 뒤뚱(waddle)은 안쪽 — 한 요소에 두 animation을 못 얹는다 */}
+        <span
+          ref={hopRef}
+          onAnimationEnd={(e) => e.target === e.currentTarget && setHopping(false)}
+          className={`block ${hopping ? "hop" : ""}`}
+        >
           <span className="pg-waddle">
             <PixelMascot size={48} />
           </span>
